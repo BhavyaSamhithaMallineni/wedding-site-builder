@@ -34,7 +34,7 @@ body{margin:0;height:100%;background:var(--paper);color:var(--ink);font:15px/1.5
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
-.app{height:100%;display:grid;grid-template-rows:auto 1fr;}
+.app{height:100%;display:grid;grid-template-rows:auto auto 1fr;}
 header.top{display:flex;align-items:center;gap:1rem;padding:.75rem 1.25rem;border-bottom:1px solid var(--line);background:var(--panel);}
 .brand{margin-right:auto;min-width:0}
 .brand h1{margin:0;font:italic 500 1.6rem/1.1 var(--display);letter-spacing:.01em}
@@ -128,6 +128,20 @@ header.top{display:flex;align-items:center;gap:1rem;padding:.75rem 1.25rem;borde
 .toast{position:fixed;left:50%;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--panel);padding:.6rem 1rem;border-radius:8px;font-size:.88rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+.inapp{display:none;background:#FFF4D6;color:#5A4210;border-bottom:1px solid #E8D29A;padding:.6rem 1.25rem;font-size:.88rem}
+.inapp.show{display:block}
+.inapp strong{font-weight:600}
+dialog{border:1px solid var(--line);border-radius:12px;padding:0;background:var(--panel);color:var(--ink);width:min(560px,calc(100vw - 2rem));max-height:calc(100vh - 3rem)}
+dialog::backdrop{background:rgba(10,20,16,.45)}
+.dlg{padding:1.4rem 1.5rem 1.2rem;overflow-y:auto;max-height:calc(100vh - 3rem)}
+.dlg h2{margin:0 0 .3rem;font:italic 500 1.7rem/1.15 var(--display)}
+.dlg .lead{margin:0 0 1rem;color:var(--muted)}
+.dlg ol{margin:0;padding-left:1.3rem;display:grid;gap:.75rem}
+.dlg li strong{display:block}
+.dlg li p{margin:.15rem 0 0;color:var(--muted);font-size:.9rem}
+.dlg ul{margin:.4rem 0 0;padding-left:1.1rem;color:var(--muted);font-size:.9rem;display:grid;gap:.2rem}
+.dlg a{color:var(--accent)}
+.dlg .actions{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.2rem}
 @media (max-width:900px){
   header.top{flex-wrap:wrap}
   .brand p{display:none}
@@ -152,8 +166,10 @@ header.top{display:flex;align-items:center;gap:1rem;padding:.75rem 1.25rem;borde
       <button type="button" data-view="edit" aria-pressed="true">Edit</button>
       <button type="button" data-view="preview" aria-pressed="false">Preview</button>
     </div>
+    <button class="btn" id="howto" type="button">How to use</button>
     <button class="btn primary" id="download" type="button">Download site</button>
   </header>
+  <div class="inapp" id="inapp" role="alert"><strong>Downloads may not work inside Instagram.</strong> Tap the ⋯ menu at the top right and choose <strong>Open in external browser</strong> (or Open in Safari / Chrome).</div>
 
   <div class="work" data-view="edit">
     <aside class="editor" id="editor" aria-label="Site details">
@@ -182,6 +198,38 @@ header.top{display:flex;align-items:center;gap:1rem;padding:.75rem 1.25rem;borde
     </main>
   </div>
 </div>
+<dialog id="guide" aria-labelledby="guideTitle">
+  <div class="dlg">
+    <h2 id="guideTitle">How to use this</h2>
+    <p class="lead">About 30 minutes, free, and no coding.</p>
+    <ol>
+      <li><strong>Replace the example details with yours.</strong><p>Open each section on the left and type over the example couple's details. The preview updates as you type. Use the <em>On site</em> switch to hide any section you don't need.</p></li>
+      <li><strong>Add your photos.</strong><p>A background photo under <em>Couple &amp; date</em>, and a few portrait photos under <em>Photo gallery</em>.</p></li>
+      <li><strong>Optional: make an RSVP form.</strong><p>Create a free form at forms.google.com, click <em>Send</em> → link icon → <em>Copy</em>, and paste it under <em>RSVP → Form link</em>.</p></li>
+      <li><strong>Download your site.</strong><p>Click <em>Download site</em>. You get one file, <em>index.html</em>, which is your whole website. Don't rename it.</p></li>
+      <li><strong>Put it online with Netlify (free).</strong>
+        <ul>
+          <li>Put index.html inside a new folder on your computer.</li>
+          <li>Go to <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a> and sign up first (free). Sites dropped without an account are deleted within an hour.</li>
+          <li>Drag the folder onto the page. You get a link ending in .netlify.app to share with guests.</li>
+        </ul></li>
+    </ol>
+    <p class="lead" style="margin-top:1rem">Your details are kept in this browser only. Use <em>Save settings file</em> at the bottom of the form to keep a backup with your photos.</p>
+    <div class="actions"><button class="btn primary" type="button" id="guideClose" autofocus>Got it</button></div>
+  </div>
+</dialog>
+<dialog id="leftover" aria-labelledby="leftTitle">
+  <div class="dlg">
+    <h2 id="leftTitle">Some example details are still here</h2>
+    <p class="lead">These sections still have text or links from the example couple:</p>
+    <ul id="leftList"></ul>
+    <p class="lead" style="margin-top:1rem">Replace them, or switch those sections off, so your guests don't see someone else's details.</p>
+    <div class="actions">
+      <button class="btn" type="button" id="leftAnyway">Download anyway</button>
+      <button class="btn primary" type="button" id="leftFix" autofocus>Go back and fix</button>
+    </div>
+  </div>
+</dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -343,9 +391,9 @@ function merge(base,over){
 function getP(o,p){return p.reduce((a,k)=>a==null?a:a[k],o)}
 function setP(o,p,v){const last=p[p.length-1];getP(o,p.slice(0,-1))[last]=v}
 function blankItem(fields){const o={};fields.forEach(f=>{o[f.k]=f.type==="list"?[]:""});return o}
-function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function esc(s){return String(s??"").trim().replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
 function rich(s,tag){tag=tag||"em";return esc(s).replace(/\*([^*]+)\*/g,"<"+tag+">$1</"+tag+">")}
-function plain(s){return String(s??"").replace(/\*/g,"")}
+function plain(s){return String(s??"").replace(/\*/g,"").trim()}
 function safeUrl(u){u=String(u||"").trim();return /^https?:\/\//i.test(u)?u:""}
 function mapUrl(q){return "https://maps.google.com/?q="+encodeURIComponent(q)}
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -831,10 +879,46 @@ async function offer(filename,data,mime){
   toast("Downloaded "+filename+".");
 }
 
+function leftovers(){
+  const hits={};
+  (function walk(o,p){
+    if(typeof o==="string"){
+      if(!o.trim())return;
+      if(getP(BLANK,p)===o)return;
+      const cur=getP(state,p);
+      if(typeof cur==="string"&&cur.trim()===o.trim()){
+        const sec=p[0];
+        if(state[sec]&&state[sec].on===false)return;
+        const fld=[...(SCHEMA.find(x=>x.key===sec)||{fields:[]}).fields].find(f=>f.k===p[1]);
+        (hits[sec]=hits[sec]||new Set()).add(fld&&fld.type==="list"?(fld.noun==="Family"?"families":fld.noun==="Person"?"people":fld.noun+"s").toLowerCase():((fld&&fld.label)||p[1]).toLowerCase());
+      }
+      return;
+    }
+    if(Array.isArray(o))o.forEach((v,i)=>walk(v,p.concat(i)));
+    else if(o&&typeof o==="object")Object.keys(o).forEach(k=>walk(o[k],p.concat(k)));
+  })(SAMPLE,[]);
+  return SCHEMA.filter(x=>hits[x.key]).map(x=>x.title+": "+[...hits[x.key]].join(", "));
+}
+const leftDlg=document.getElementById("leftover");
+function doDownload(){offer("index.html",generate(state),"text/html")}
 document.getElementById("download").addEventListener("click",()=>{
-  if(!state.couple.name1||!state.couple.name2){toast("Add both names under “Couple & date” first.");return}
-  offer("index.html",generate(state),"text/html");
+  if(!state.couple.name1.trim()||!state.couple.name2.trim()){toast("Add both names under “Couple & date” first.");return}
+  const left=leftovers();
+  if(left.length&&leftDlg.showModal){
+    const ul=document.getElementById("leftList");ul.innerHTML="";
+    left.forEach(t=>ul.appendChild(el("li",{text:t})));
+    leftDlg.showModal();return;
+  }
+  doDownload();
 });
+document.getElementById("leftAnyway").addEventListener("click",()=>{leftDlg.close();doDownload()});
+document.getElementById("leftFix").addEventListener("click",()=>leftDlg.close());
+const guideDlg=document.getElementById("guide");
+document.getElementById("howto").addEventListener("click",()=>{if(guideDlg.showModal)guideDlg.showModal()});
+document.getElementById("guideClose").addEventListener("click",()=>guideDlg.close());
+[guideDlg,leftDlg].forEach(d=>d.addEventListener("click",e=>{if(e.target===d)d.close()}));
+if(/Instagram|FBAN|FBAV|FB_IAB|Threads/i.test(navigator.userAgent||""))document.getElementById("inapp").classList.add("show");
+try{if(!localStorage.getItem(STORE_KEY+"-seen")){localStorage.setItem(STORE_KEY+"-seen","1");setTimeout(()=>{if(guideDlg.showModal)guideDlg.showModal()},400)}}catch(e){}
 document.getElementById("export").addEventListener("click",()=>offer("wedding-site-settings.json",JSON.stringify(state,null,1),"application/json"));
 document.getElementById("import").addEventListener("change",e=>{
   const f=e.target.files[0];if(!f)return;
