@@ -533,7 +533,8 @@ function generate(s,opt){
   body.push('<footer class="has-k">'+(s.look.ornaments?'<div class="k k-tl sm" aria-hidden="true"></div><div class="k k-br sm" aria-hidden="true"></div>':"")+
     '<div class="footer-inner"><div class="orn">✦</div><p><em>'+esc(n1)+"</em> &amp; <em>"+esc(n2)+"</em></p>"+
     ((dateLine||s.couple.placeLine)?'<p class="foot-meta">'+esc([dateLine,s.couple.placeLine].filter(Boolean).join("  ·  "))+"</p>":"")+
-    (s.footer.credit?'<p class="foot-credit">'+esc(s.footer.credit)+"</p>":"")+"</div></footer>");
+    (s.footer.credit?'<p class="foot-credit">'+esc(s.footer.credit)+"</p>":"")+
+    '<p class="foot-maker">Wedding invitation created by <a href="https://www.instagram.com/the_balcony_ticket" target="_blank" rel="noopener">Samhi · @the_balcony_ticket</a></p>'+"</div></footer>");
 
   const navHTML=nav.length?'<nav aria-label="Sections">'+nav.map(([id,l],i)=>(i?'<span class="nav-dot" aria-hidden="true">◆</span>':"")+'<a href="#'+id+'">'+l+"</a>").join("")+"</nav>":"";
   const title=plain(n1)+" & "+plain(n2)+(dateLine?" — "+dateLine:"");
@@ -645,6 +646,9 @@ footer em{color:var(--gold-lt)}
 .footer-inner{position:relative;z-index:2}
 .foot-meta{margin-top:.4rem;font-size:.85rem}
 .foot-credit{margin-top:1.4rem;font-size:.8rem;color:var(--bg-light)}
+.foot-maker{margin-top:1rem;font-size:.75rem;color:var(--bg-light);opacity:.85}
+.foot-maker a{color:var(--gold-lt);text-decoration:none;border-bottom:1px solid currentColor}
+.foot-maker a:hover{opacity:.8}
 .lightbox{display:none;position:fixed;inset:0;z-index:999;background:${rgba(P.deeper,.96)};align-items:center;justify-content:center;padding:2rem}
 .lightbox.active{display:flex}
 .lightbox img{max-width:90vw;max-height:88vh;border-radius:2px}
